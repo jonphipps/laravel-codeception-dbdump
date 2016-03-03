@@ -13,7 +13,7 @@ class DbDump extends Command
      *
      * @var string
      */
-    protected $signature = 'codeception:dbdump {connection}';
+    protected $signature = 'codeception:dbdump {connection} {--dump=tests/_data/dump.sql}';
 
     /**
      * The console command description.
@@ -21,13 +21,6 @@ class DbDump extends Command
      * @var string
      */
     protected $description = 'Migrate, seed and create an SQL dump of a test database';
-
-    /**
-     * The path where the dump will be stored.
-     *
-     * @var string
-     */
-    protected $dump = 'tests/_data/dump.sql';
 
     /**
      * Execute the console command.
@@ -91,7 +84,7 @@ class DbDump extends Command
         }
 
         $success = $command->execute(
-            $this->dump,
+            $this->option('dump'),
             $database,
             $host,
             $username,

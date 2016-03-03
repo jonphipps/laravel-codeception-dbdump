@@ -35,6 +35,12 @@ Run the command with a single argument `connection`, which is one of the connect
 php artisan codeception:dbdump connection
 ```
 
+Optionally, you can specify a path to the dump file:
+
+```
+php artisan codeception:dbdump connection --dump tests/_data/test.sql
+```
+
 ## Run the command whenever your tests run
 
 It's possible to have this command run automatically before any of your tests are executed by adding
