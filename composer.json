@@ -1,0 +1,23 @@
+{
+    "name": "antennaio/laravel-codeception-dbdump",
+    "description": "Create database dumps ready to be used with Codeception",
+    "keywords": ["laravel", "php", "testing", "database", "dump", "mysql", "sqlite", "codeception"],
+    "license": "MIT",
+    "homepage": "https://github.com/antennaio/laravel-codeception-dbdump",
+    "require": {
+        "illuminate/support": "^5.1",
+        "illuminate/console": "^5.1"
+    }
+    "authors": [
+        {
+            "name": "Kazik",
+            "email": "antenna@antenna.io"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Antennaio\\Codeception\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
