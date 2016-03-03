@@ -41,7 +41,7 @@ It's possible to have this command run automatically before any of your tests ar
 it to `tests/_bootstrap.php`:
 
 ```
-exec('php artisan codeception:dump connection');
+exec('php artisan codeception:dbdump connection');
 ```
 
 ## Compatibility
