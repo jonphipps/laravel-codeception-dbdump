@@ -9,13 +9,11 @@ class DbDumpServiceProvider extends ServiceProvider
 {
     /**
      * Register the service provider.
-     *
-     * @return void
      */
     public function register()
     {
         $this->commands([
-            DbDump::class
+            DbDump::class,
         ]);
     }
 }

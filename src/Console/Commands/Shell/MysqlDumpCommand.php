@@ -12,13 +12,14 @@ class MysqlDumpCommand implements DumpCommand
      * @param string $host
      * @param string $username
      * @param string $password
-     * @return boolean
+     *
+     * @return bool
      */
     public function execute($dump, $database, $host = null, $username = null, $password = null)
     {
         $command = "mysqldump -h $host";
         $command .= " -u $username";
-        $command .= ($password) ? " -p$password" : "";
+        $command .= ($password) ? " -p$password" : '';
         $command .= " -c $database";
         $command .= " > $dump";
 

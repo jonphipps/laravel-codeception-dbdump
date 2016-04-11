@@ -40,7 +40,6 @@ class DbDump extends Command
      * Migrate test database.
      *
      * @param string $connection
-     * @return void
      */
     private function migrate($connection)
     {
@@ -53,7 +52,6 @@ class DbDump extends Command
      * Seed test database.
      *
      * @param string $connection
-     * @return void
      */
     private function seed($connection)
     {
@@ -66,7 +64,6 @@ class DbDump extends Command
      * Dump test database.
      *
      * @param string $connection
-     * @return void
      */
     private function dump($connection)
     {

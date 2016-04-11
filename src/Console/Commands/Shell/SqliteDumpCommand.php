@@ -12,7 +12,8 @@ class SqliteDumpCommand implements DumpCommand
      * @param string $host
      * @param string $username
      * @param string $password
-     * @return boolean
+     *
+     * @return bool
      */
     public function execute($dump, $database, $host = null, $username = null, $password = null)
     {
