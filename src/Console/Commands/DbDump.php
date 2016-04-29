@@ -83,22 +83,24 @@ class DbDump extends Command
      */
     private function emptyDatabase()
     {
-        if ($this->option('empty-database')) {
-            $this->info("Truncating $this->connection database.");
-
-            $tableNames = Schema::connection($this->connection)
-                ->getConnection()
-                ->getDoctrineSchemaManager()
-                ->listTableNames();
-
-            $this->sqlDialect->setForeignKeyChecks(false);
-
-            foreach ($tableNames as $table) {
-                Schema::connection($this->connection)->drop($table);
-            }
-
-            $this->sqlDialect->setForeignKeyChecks(true);
+        if (!$this->option('empty-database')) {
+            return;
         }
+
+        $this->info("Truncating $this->connection database.");
+
+        $tableNames = Schema::connection($this->connection)
+            ->getConnection()
+            ->getDoctrineSchemaManager()
+            ->listTableNames();
+
+        $this->sqlDialect->setForeignKeyChecks(false);
+
+        foreach ($tableNames as $table) {
+            Schema::connection($this->connection)->drop($table);
+        }
+
+        $this->sqlDialect->setForeignKeyChecks(true);
     }
 
     /**
@@ -116,17 +118,19 @@ class DbDump extends Command
      */
     private function seed()
     {
-        if (!$this->option('no-seeding')) {
-            $this->info("Seeding $this->connection database.");
-
-            $opts = ['--database' => $this->connection];
-
-            if ($this->option('seeder-class')) {
-                $opts['--class'] = $this->option('seeder-class');
-            }
-
-            $this->call('db:seed', $opts);
+        if ($this->option('no-seeding')) {
+            return;
         }
+
+        $this->info("Seeding $this->connection database.");
+
+        $opts = ['--database' => $this->connection];
+
+        if ($this->option('seeder-class')) {
+            $opts['--class'] = $this->option('seeder-class');
+        }
+
+        $this->call('db:seed', $opts);
     }
 
     /**
