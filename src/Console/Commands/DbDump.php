@@ -58,11 +58,13 @@ class DbDump extends Command
                 ->getDoctrineSchemaManager()
                 ->listTableNames();
 
-            foreach ($tableNames as $name) {
-                \DB::connection($connection)
-                    ->table($name)
-                    ->delete();
+            \DB::connection($connection)
+                ->statement("SET foreign_key_checks=0");
+            foreach ($tableNames as $table) {
+                \Schema::connection($connection)->drop($table);
             }
+            \DB::connection($connection)
+                ->statement("SET foreign_key_checks=1");
         }
     }
 
