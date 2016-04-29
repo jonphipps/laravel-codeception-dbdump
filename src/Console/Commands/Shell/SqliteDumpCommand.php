@@ -12,12 +12,14 @@ class SqliteDumpCommand implements DumpCommand
      * @param string $host
      * @param string $username
      * @param string $password
+     * @param string $binary
      *
      * @return bool
      */
-    public function execute($dump, $database, $host = null, $username = null, $password = null)
+    public function execute($dump, $database, $host = null, $username = null, $password = null, $binary = null)
     {
-        $command = "sqlite3 $database '.dump'";
+        $binary = is_null($binary) ? 'sqlite3' : $binary;
+        $command = "$binary $database '.dump'";
         $command .= " > $dump";
 
         exec($command, $output, $status);
