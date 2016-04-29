@@ -3,7 +3,6 @@
 namespace Antennaio\Codeception\Console\Commands;
 
 use Antennaio\Codeception\Console\Commands\Shell\DumpCommandFactory;
-use Artisan;
 use Illuminate\Console\Command;
 
 class DbDump extends Command
@@ -13,7 +12,12 @@ class DbDump extends Command
      *
      * @var string
      */
-    protected $signature = 'codeception:dbdump {connection} {--dump=tests/_data/dump.sql}';
+    protected $signature = 'codeception:dbdump
+        {connection : Focus the database connection,from app/database.php, you want to dump}
+        {--dump=tests/_data/dump.sql : Choose the path for your dump file}
+        {--no-seed : Disable the seed in the dump process}
+        {--seed-class=DatabaseSeeder : Choose the class to seed in your dump (class from database/seeds)}
+        {--binary-dump= : Specify the path to mysqldump (only for mysql connection driver) or sqlite3 (only for sqlite connection driver) to make the dump}';
 
     /**
      * The console command description.
@@ -45,7 +49,7 @@ class DbDump extends Command
     {
         $this->info('Migrating test database.');
 
-        Artisan::call('migrate', ['--database' => $connection]);
+        $this->call('migrate', ['--database' => $connection]);
     }
 
     /**
@@ -55,9 +59,17 @@ class DbDump extends Command
      */
     private function seed($connection)
     {
-        $this->info('Seeding test database.');
+        if (!$this->option('no-seed')) {
+            $this->info('Seeding test database.');
 
-        Artisan::call('db:seed', ['--database' => $connection]);
+            $opts = ['--database' => $connection];
+
+            if ($this->option('seed-class')) {
+                $opts['--class'] = $this->option('seed-class');
+            }
+
+            $this->call('db:seed', $opts);
+        }
     }
 
     /**
@@ -85,7 +97,8 @@ class DbDump extends Command
             $database,
             $host,
             $username,
-            $password
+            $password,
+            $this->option('binary-dump')
         );
 
         if ($success) {

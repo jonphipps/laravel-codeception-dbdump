@@ -12,8 +12,9 @@ interface DumpCommand
      * @param string $host
      * @param string $username
      * @param string $password
+     * @param string $binary
      *
      * @return bool
      */
-    public function execute($dump, $database, $host = null, $username = null, $password = null);
+    public function execute($dump, $database, $host = null, $username = null, $password = null, $binary = null);
 }
