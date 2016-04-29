@@ -79,7 +79,7 @@ class DbDump extends Command
     }
 
     /**
-     * Delete all database tables
+     * Delete all database tables.
      */
     private function emptyDatabase()
     {

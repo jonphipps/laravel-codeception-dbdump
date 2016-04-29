@@ -7,13 +7,13 @@ class MysqlDialect implements Dialect
     /**
      * Set foreign key checks on/off.
      *
-     * @param boolean $state
+     * @param bool $state
      *
      * @return string
      */
     public function setForeignKeyChecks($state)
     {
-        $flag = (int)$state;
+        $flag = (int) $state;
 
         return "SET foreign_key_checks = $flag";
     }

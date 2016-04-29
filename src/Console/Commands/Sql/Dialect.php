@@ -7,7 +7,7 @@ interface Dialect
     /**
      * Set foreign key checks on/off.
      *
-     * @param boolean $state
+     * @param bool $state
      *
      * @return string
      */
