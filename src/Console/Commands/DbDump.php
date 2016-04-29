@@ -42,6 +42,11 @@ class DbDump extends Command
         $this->dump($connection);
     }
 
+    /**
+     * Delete all database tables
+     *
+     * @param string $connection
+     */
     private function emptyDatabase($connection)
     {
         if ($this->option('empty-database'))
