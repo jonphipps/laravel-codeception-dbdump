@@ -15,6 +15,7 @@ class DbDump extends Command
     protected $signature = 'codeception:dbdump
         {connection : Focus the database connection,from app/database.php, you want to dump}
         {--dump=tests/_data/dump.sql : Choose the path for your dump file}
+        {--empty-database : Delete all database tables before any other action}
         {--no-seed : Disable the seed in the dump process}
         {--seed-class=DatabaseSeeder : Choose the class to seed in your dump (class from database/seeds)}
         {--binary-dump= : Specify the path to mysqldump (only for mysql connection driver) or sqlite3 (only for sqlite connection driver) to make the dump}';
@@ -35,9 +36,29 @@ class DbDump extends Command
     {
         $connection = $this->argument('connection');
 
+        $this->emptyDatabase($connection);
         $this->migrate($connection);
         $this->seed($connection);
         $this->dump($connection);
+    }
+
+    private function emptyDatabase($connection)
+    {
+        if ($this->option('empty-database'))
+        {
+            $this->info("Truncating $connection database.");
+
+            $tableNames = \Schema::connection($connection)
+                ->getConnection()
+                ->getDoctrineSchemaManager()
+                ->listTableNames();
+
+            foreach ($tableNames as $name) {
+                \DB::connection($connection)
+                    ->table($name)
+                    ->delete();
+            }
+        }
     }
 
     /**
@@ -47,8 +68,7 @@ class DbDump extends Command
      */
     private function migrate($connection)
     {
-        $this->info('Migrating test database.');
-
+        $this->info("Migrating $connection database.");
         $this->call('migrate', ['--database' => $connection]);
     }
 
@@ -60,7 +80,7 @@ class DbDump extends Command
     private function seed($connection)
     {
         if (!$this->option('no-seed')) {
-            $this->info('Seeding test database.');
+            $this->info("Seeding $connection database.");
 
             $opts = ['--database' => $connection];
 
