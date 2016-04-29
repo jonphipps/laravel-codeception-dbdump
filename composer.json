@@ -6,7 +6,8 @@
     "homepage": "https://github.com/antennaio/laravel-codeception-dbdump",
     "require": {
         "illuminate/support": "^5.1",
-        "illuminate/console": "^5.1"
+        "illuminate/console": "^5.1",
+        "doctrine/dbal": "~2.3"
     },
     "authors": [
         {
