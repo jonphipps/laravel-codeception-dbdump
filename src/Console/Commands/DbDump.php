@@ -4,6 +4,8 @@ namespace Antennaio\Codeception\Console\Commands;
 
 use Antennaio\Codeception\Console\Commands\Shell\DumpCommandFactory;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class DbDump extends Command
 {
@@ -49,21 +51,22 @@ class DbDump extends Command
      */
     private function emptyDatabase($connection)
     {
-        if ($this->option('empty-database'))
-        {
+        if ($this->option('empty-database')) {
             $this->info("Truncating $connection database.");
 
-            $tableNames = \Schema::connection($connection)
+            $tableNames = Schema::connection($connection)
                 ->getConnection()
                 ->getDoctrineSchemaManager()
                 ->listTableNames();
 
-            \DB::connection($connection)
+            DB::connection($connection)
                 ->statement("SET foreign_key_checks=0");
+
             foreach ($tableNames as $table) {
-                \Schema::connection($connection)->drop($table);
+                Schema::connection($connection)->drop($table);
             }
-            \DB::connection($connection)
+
+            DB::connection($connection)
                 ->statement("SET foreign_key_checks=1");
         }
     }
