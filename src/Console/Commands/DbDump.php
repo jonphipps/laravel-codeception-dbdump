@@ -39,12 +39,12 @@ class DbDump extends Command
      * @var string
      */
     protected $signature = 'codeception:dbdump
-        {connection : Focus the database connection,from app/database.php, you want to dump}
+        {connection : Specify the database connection, it needs to be one of the connections listed in config/database.php}
         {--dump=tests/_data/dump.sql : Choose the path for your dump file}
         {--empty-database : Delete all database tables before any other action}
-        {--no-seed : Disable the seed in the dump process}
-        {--seed-class=DatabaseSeeder : Choose the class to seed in your dump (class from database/seeds)}
-        {--binary-dump= : Specify the path to mysqldump (only for mysql connection driver) or sqlite3 (only for sqlite connection driver) to make the dump}';
+        {--no-seeding : Disable seeding in the dump process}
+        {--seeder-class=DatabaseSeeder : Choose the seeder class}
+        {--binary= : Specify the path to mysqldump (if using mysql driver) or sqlite3 (if using sqlite driver)}';
 
     /**
      * The console command description.
@@ -116,13 +116,13 @@ class DbDump extends Command
      */
     private function seed()
     {
-        if (!$this->option('no-seed')) {
+        if (!$this->option('no-seeding')) {
             $this->info("Seeding $this->connection database.");
 
             $opts = ['--database' => $this->connection];
 
-            if ($this->option('seed-class')) {
-                $opts['--class'] = $this->option('seed-class');
+            if ($this->option('seeder-class')) {
+                $opts['--class'] = $this->option('seeder-class');
             }
 
             $this->call('db:seed', $opts);
@@ -147,7 +147,7 @@ class DbDump extends Command
             $this->config['host'],
             $this->config['username'],
             $this->config['password'],
-            $this->option('binary-dump')
+            $this->option('binary')
         );
 
         if ($success) {
