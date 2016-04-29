@@ -2,13 +2,37 @@
 
 namespace Antennaio\Codeception\Console\Commands;
 
+use Antennaio\Codeception\Console\Commands\Sql\Dialect;
+use Antennaio\Codeception\Console\Commands\Sql\DialectFactory;
 use Antennaio\Codeception\Console\Commands\Shell\DumpCommandFactory;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DbDump extends Command
 {
+    /**
+     * @var string
+     */
+    protected $connection;
+
+    /**
+     * @var array
+     */
+    protected $config = [
+        'driver' => null,
+        'database' => null,
+        'host' => null,
+        'username' => null,
+        'password' => null,
+    ];
+
+    /**
+     * @var Dialect
+     */
+    protected $sqlDialect;
+
     /**
      * The name and signature of the console command.
      *
@@ -30,69 +54,72 @@ class DbDump extends Command
     protected $description = 'Migrate, seed and create an SQL dump of a test database';
 
     /**
+     * Perform setup.
+     */
+    private function setup()
+    {
+        $this->connection = $this->argument('connection');
+        $this->config = array_merge($this->config, Config::get('database.connections.'.$this->connection));
+        $this->sqlDialect = DialectFactory::create($this->config['driver']);
+    }
+
+    /**
      * Execute the console command.
      *
      * @return mixed
      */
     public function handle()
     {
-        $connection = $this->argument('connection');
+        $this->setup();
 
-        $this->emptyDatabase($connection);
-        $this->migrate($connection);
-        $this->seed($connection);
-        $this->dump($connection);
+        $this->emptyDatabase();
+        $this->migrate();
+        $this->seed();
+        $this->dump();
     }
 
     /**
      * Delete all database tables
-     *
-     * @param string $connection
      */
-    private function emptyDatabase($connection)
+    private function emptyDatabase()
     {
         if ($this->option('empty-database')) {
-            $this->info("Truncating $connection database.");
+            $this->info("Truncating $this->connection database.");
 
-            $tableNames = Schema::connection($connection)
+            $tableNames = Schema::connection($this->connection)
                 ->getConnection()
                 ->getDoctrineSchemaManager()
                 ->listTableNames();
 
-            DB::connection($connection)
-                ->statement("SET foreign_key_checks=0");
+            $this->sqlDialect->setForeignKeyChecks(false);
 
             foreach ($tableNames as $table) {
-                Schema::connection($connection)->drop($table);
+                Schema::connection($this->connection)->drop($table);
             }
 
-            DB::connection($connection)
-                ->statement("SET foreign_key_checks=1");
+            $this->sqlDialect->setForeignKeyChecks(true);
         }
     }
 
     /**
      * Migrate test database.
-     *
-     * @param string $connection
      */
-    private function migrate($connection)
+    private function migrate()
     {
-        $this->info("Migrating $connection database.");
-        $this->call('migrate', ['--database' => $connection]);
+        $this->info("Migrating $this->connection database.");
+
+        $this->call('migrate', ['--database' => $this->connection]);
     }
 
     /**
      * Seed test database.
-     *
-     * @param string $connection
      */
-    private function seed($connection)
+    private function seed()
     {
         if (!$this->option('no-seed')) {
-            $this->info("Seeding $connection database.");
+            $this->info("Seeding $this->connection database.");
 
-            $opts = ['--database' => $connection];
+            $opts = ['--database' => $this->connection];
 
             if ($this->option('seed-class')) {
                 $opts['--class'] = $this->option('seed-class');
@@ -104,19 +131,11 @@ class DbDump extends Command
 
     /**
      * Dump test database.
-     *
-     * @param string $connection
      */
-    private function dump($connection)
+    private function dump()
     {
-        $driver = config('database.connections.'.$connection.'.driver');
-        $database = config('database.connections.'.$connection.'.database');
-        $host = config('database.connections.'.$connection.'.host');
-        $username = config('database.connections.'.$connection.'.username');
-        $password = config('database.connections.'.$connection.'.password');
-
         try {
-            $command = DumpCommandFactory::create($driver);
+            $command = DumpCommandFactory::create($this->config['driver']);
         } catch (\Exception $exception) {
             $this->error($exception->getMessage());
             exit();
@@ -124,10 +143,10 @@ class DbDump extends Command
 
         $success = $command->execute(
             $this->option('dump'),
-            $database,
-            $host,
-            $username,
-            $password,
+            $this->config['database'],
+            $this->config['host'],
+            $this->config['username'],
+            $this->config['password'],
             $this->option('binary-dump')
         );
 
