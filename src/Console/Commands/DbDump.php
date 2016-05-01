@@ -94,13 +94,15 @@ class DbDump extends Command
             ->getDoctrineSchemaManager()
             ->listTableNames();
 
-        $this->sqlDialect->setForeignKeyChecks(false);
+        DB::connection($this->connection)
+            ->statement($this->sqlDialect->setForeignKeyChecks(false));
 
         foreach ($tableNames as $table) {
             Schema::connection($this->connection)->drop($table);
         }
 
-        $this->sqlDialect->setForeignKeyChecks(true);
+        DB::connection($this->connection)
+            ->statement($this->sqlDialect->setForeignKeyChecks(true));
     }
 
     /**
