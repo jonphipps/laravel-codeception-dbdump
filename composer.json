@@ -9,6 +9,11 @@
         "illuminate/console": "^5.1",
         "doctrine/dbal": "~2.3"
     },
+    "require-dev": {
+        "phpunit/phpunit": "5.*",
+        "orchestra/testbench": "~3.0",
+        "mockery/mockery": "^0.9.4"
+    },
     "authors": [
         {
             "name": "Kazik",
@@ -20,5 +25,13 @@
             "Antennaio\\Codeception\\": "src/"
         }
     },
-    "minimum-stability": "stable"
+    "autoload-dev": {
+        "psr-4": {
+            "Antennaio\\Codeception\\Test\\": "tests"
+        }
+    },
+    "minimum-stability": "stable",
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    }
 }
