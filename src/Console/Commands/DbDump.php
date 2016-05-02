@@ -31,7 +31,7 @@ class DbDump extends Command
     /**
      * @var Dialect
      */
-    protected $sqlDialect;
+    protected $sql;
 
     /**
      * The name and signature of the console command.
@@ -59,8 +59,13 @@ class DbDump extends Command
     private function setup()
     {
         $this->connection = $this->argument('connection');
-        $this->config = array_merge($this->config, Config::get('database.connections.'.$this->connection));
-        $this->sqlDialect = DialectFactory::create($this->config['driver']);
+
+        $this->config = array_merge(
+            $this->config,
+            Config::get('database.connections.'.$this->connection)
+        );
+
+        $this->sql = DialectFactory::create($this->config['driver']);
     }
 
     /**
@@ -95,14 +100,14 @@ class DbDump extends Command
             ->listTableNames();
 
         DB::connection($this->connection)
-            ->statement($this->sqlDialect->setForeignKeyChecks(false));
+            ->statement($this->sql->setForeignKeyChecks(false));
 
         foreach ($tableNames as $table) {
             Schema::connection($this->connection)->drop($table);
         }
 
         DB::connection($this->connection)
-            ->statement($this->sqlDialect->setForeignKeyChecks(true));
+            ->statement($this->sql->setForeignKeyChecks(true));
     }
 
     /**
