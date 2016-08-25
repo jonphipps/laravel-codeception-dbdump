@@ -13,7 +13,7 @@ project that will migrate, seed and dump a test database making it ready to be u
 Install through composer:
 
 ```
-composer require antennaio/laravel-codeception-dbdump
+composer require antennaio/laravel-codeception-dbdump:~0.0.1
 ```
 
 Add the service provider to config:
