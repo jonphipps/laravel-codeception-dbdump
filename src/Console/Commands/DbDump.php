@@ -24,6 +24,7 @@ class DbDump extends Command
         'driver' => null,
         'database' => null,
         'host' => null,
+        'port' => null,
         'username' => null,
         'password' => null,
     ];
@@ -158,7 +159,8 @@ class DbDump extends Command
             $this->config['host'],
             $this->config['username'],
             $this->config['password'],
-            $this->option('binary')
+            $this->option('binary'),
+            $this->config['port']
         );
 
         if ($success) {
